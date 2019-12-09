@@ -1,0 +1,12 @@
+{
+  "name": "my-first-game-multiplayer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/xrafaelcruz/my-first-game-multiplayer.git",
+  "author": "<xrafaelcruz@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
