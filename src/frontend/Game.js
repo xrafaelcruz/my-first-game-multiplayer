@@ -1,6 +1,6 @@
 var socket = io();
 
-socket.on("message", function(data) {
+socket.on('message', function(data) {
   console.log(data);
 });
 
@@ -8,9 +8,9 @@ var movement = {
   up: false,
   down: false,
   left: false,
-  right: false
+  right: false,
 };
-document.addEventListener("keydown", function(event) {
+document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
     case 65: // A
       movement.left = true;
@@ -26,7 +26,7 @@ document.addEventListener("keydown", function(event) {
       break;
   }
 });
-document.addEventListener("keyup", function(event) {
+document.addEventListener('keyup', function(event) {
   switch (event.keyCode) {
     case 65: // A
       movement.left = false;
@@ -43,19 +43,19 @@ document.addEventListener("keyup", function(event) {
   }
 });
 
-socket.emit("new player");
+socket.emit('new player');
 setInterval(function() {
-  socket.emit("movement", movement);
+  socket.emit('movement', movement);
 }, 1000 / 60);
 
-var canvas = document.getElementById("canvas");
+var canvas = document.getElementById('canvas');
 canvas.width = 800;
 canvas.height = 600;
-var context = canvas.getContext("2d");
+var context = canvas.getContext('2d');
 
-socket.on("state", function(players) {
+socket.on('state', function(players) {
   context.clearRect(0, 0, 800, 600);
-  context.fillStyle = "green";
+  context.fillStyle = 'green';
   for (var id in players) {
     var player = players[id];
     context.beginPath();
