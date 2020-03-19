@@ -17,6 +17,7 @@ class App {
   }
 
   routes() {
+    // path definido para ser usado em index.html
     this.express.use(
       '/frontend',
       express.static(path.join(__dirname, '..', 'frontend'))

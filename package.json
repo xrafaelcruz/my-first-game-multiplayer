@@ -5,6 +5,9 @@
   "repository": "https://github.com/xrafaelcruz/my-first-game-multiplayer.git",
   "author": "<xrafaelcruz@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "node src/backend/server.js"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
