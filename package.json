@@ -6,10 +6,13 @@
   "author": "<xrafaelcruz@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node src/backend/server.js"
+    "start": "nodemon src/backend/server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
   }
 }

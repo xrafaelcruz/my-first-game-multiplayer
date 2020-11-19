@@ -1,41 +1,43 @@
+
 class SocketEvents {
-  init(io) {
-    setInterval(function() {
-      io.sockets.emit('message', 'hi!');
-    }, 1000);
+  players = {};
 
-    var players = {};
-    io.on('connection', function(socket) {
-      socket.on('new player', function() {
-        players[socket.id] = {
-          x: 300,
-          y: 300,
-        };
-      });
-      socket.on('movement', function(data) {
-        var player = players[socket.id] || {};
-        if (data.left) {
-          player.x -= 5;
-        }
-        if (data.up) {
-          player.y -= 5;
-        }
-        if (data.right) {
-          player.x += 5;
-        }
-        if (data.down) {
-          player.y += 5;
-        }
-      });
-      socket.on('disconnect', function() {
-        // remove disconnected player
-        delete players[socket.id];
-      });
-    });
+  newPlayer = (socket) => () => {
+    const newPlayer = {
+      coords: { x: 10, y: 40 }
+    };
 
-    setInterval(function() {
-      io.sockets.emit('state', players);
+    this.players[socket.id] = newPlayer
+  }
+
+  movement = (socket) => (movement) => {
+    const player = this.players[socket.id] || {};
+
+    if (movement.left) player.coords.x -= 5;
+    if (movement.up) player.coords.y -= 5;
+    if (movement.right) player.coords.x += 5;
+    if (movement.down) player.coords.y += 5;
+  }
+
+  disconnect = (socket) => () => {
+    delete this.players[socket.id];
+  }
+
+  connection = (socket) => {
+    socket.on('new player', this.newPlayer(socket));
+    socket.on('movement', this.movement(socket));
+    socket.on('disconnect', this.disconnect(socket));
+  }
+
+  syncPlayers = (io) => {
+    setInterval(() => {
+      io.sockets.emit('players', this.players);
     }, 1000 / 60);
+  }
+
+  init = (io) => {
+    io.on('connection', this.connection);
+    this.syncPlayers(io);
   }
 }
 
