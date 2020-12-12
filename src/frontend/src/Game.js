@@ -30,11 +30,11 @@ export default class Game {
 
   renderGame = () => {
     this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    this.context.fillStyle = 'red';
 
     for (let id in this.players) {
       const player = this.players[id];
 
+      this.context.fillStyle = player.color;
       this.context.beginPath();
       this.context.arc(player.coords.x, player.coords.y, 20, 0, 2 * Math.PI);
       this.context.fill();
@@ -44,16 +44,12 @@ export default class Game {
   };
 
   start = () => {
-    this.socket.on('player-update', (payload) => {
+    this.socket.on('update-player', (payload) => {
       this.players[payload.socketId] = payload.player;
     });
 
-    this.socket.on('player-remove', (socketId) => {
+    this.socket.on('delete-player', (socketId) => {
       delete this.players[socketId];
-    });
-
-    this.socket.on('hello', (message) => {
-      console.log('hello', message);
     });
 
     requestAnimationFrame(this.renderGame);

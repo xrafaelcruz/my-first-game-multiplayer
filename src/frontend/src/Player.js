@@ -1,53 +1,50 @@
 export default class Player {
   constructor(socket) {
     this.socket = socket;
-    this.movement = { up: false, down: false, left: false, right: false };
+    this.directions = { up: false, down: false, left: false, right: false };
 
-    this.socket.emit('new player');
+    this.socket.emit('new-player');
 
     this.addListeners();
-    this.syncMovements();
   }
 
   addListeners = () => {
     document.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
         case 65: // A
-          this.movement.left = true;
+          this.directions.left = true;
           break;
         case 87: // W
-          this.movement.up = true;
+          this.directions.up = true;
           break;
         case 68: // D
-          this.movement.right = true;
+          this.directions.right = true;
           break;
         case 83: // S
-          this.movement.down = true;
+          this.directions.down = true;
           break;
       }
+
+      this.socket.emit('movement', this.directions);
     });
 
     document.addEventListener('keyup', (event) => {
       switch (event.keyCode) {
         case 65: // A
-          this.movement.left = false;
+          this.directions.left = false;
           break;
         case 87: // W
-          this.movement.up = false;
+          this.directions.up = false;
           break;
         case 68: // D
-          this.movement.right = false;
+          this.directions.right = false;
           break;
         case 83: // S
-          this.movement.down = false;
+          this.directions.down = false;
           break;
       }
-    });
-  };
 
-  syncMovements = () => {
-    setInterval(() => {
-      this.socket.emit('movement', this.movement);
-    }, 1000 / 60);
+      this.socket.emit('movement', this.directions);
+    });
   };
 }
