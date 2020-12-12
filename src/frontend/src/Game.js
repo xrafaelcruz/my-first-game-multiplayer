@@ -1,34 +1,61 @@
-const canvasWidth = 200
-const canvasHeight = 300
-
 export default class Game {
+  players = {};
+
   constructor(socket) {
     this.socket = socket;
 
-    this.setupCanvas()
-    this.render();
+    this.addListeners();
+    this.setupCanvas();
+    this.start();
   }
+
+  updateCanvasSize = () => {
+    const canvas = document.getElementById('canvas');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    return canvas;
+  };
 
   setupCanvas = () => {
-    const canvas = document.getElementById('canvas');
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
+    const canvas = this.updateCanvasSize();
 
     this.context = canvas.getContext('2d');
-  }
+  };
 
-  render = () => {
-    this.socket.on('players', (players) => {
-      this.context.clearRect(0, 0, canvasWidth, canvasHeight);
-      this.context.fillStyle = 'green';
+  addListeners = () => {
+    window.addEventListener('resize', this.updateCanvasSize);
+  };
 
-      for (let id in players) {
-        const player = players[id];
-        
-        this.context.beginPath();
-        this.context.arc(player.coords.x, player.coords.y, 10, 0, 2 * Math.PI);
-        this.context.fill();
-      }
+  renderGame = () => {
+    this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    this.context.fillStyle = 'red';
+
+    for (let id in this.players) {
+      const player = this.players[id];
+
+      this.context.beginPath();
+      this.context.arc(player.coords.x, player.coords.y, 20, 0, 2 * Math.PI);
+      this.context.fill();
+    }
+
+    requestAnimationFrame(this.renderGame);
+  };
+
+  start = () => {
+    this.socket.on('player-update', (payload) => {
+      this.players[payload.socketId] = payload.player;
     });
-  }
+
+    this.socket.on('player-remove', (socketId) => {
+      delete this.players[socketId];
+    });
+
+    this.socket.on('hello', (message) => {
+      console.log('hello', message);
+    });
+
+    requestAnimationFrame(this.renderGame);
+  };
 }

@@ -1,4 +1,3 @@
-
 export default class Player {
   constructor(socket) {
     this.socket = socket;
@@ -27,7 +26,7 @@ export default class Player {
           break;
       }
     });
-    
+
     document.addEventListener('keyup', (event) => {
       switch (event.keyCode) {
         case 65: // A
@@ -44,11 +43,11 @@ export default class Player {
           break;
       }
     });
-  }
+  };
 
   syncMovements = () => {
     setInterval(() => {
       this.socket.emit('movement', this.movement);
     }, 1000 / 60);
-  }
+  };
 }
