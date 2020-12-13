@@ -10,44 +10,37 @@ class SocketEvents {
   players = {};
 
   newPlayer = (socket) => () => {
-    const player = {
+    this.players[socket.id] = {
       coords: { x: 10, y: 40 },
       color: getRandomColor(),
-    };
+    };;
 
-    this.players[socket.id] = player;
-
-    socket.emit('update-player', {
-      socketId: socket.id,
-      player,
-    });
+    socket.broadcast.emit('update-all-players', this.players);
+    socket.emit('update-all-players', this.players);
   };
 
-  movement = (socket) => (direction) => {
-    const player = this.players[socket.id] || {}; // ver isso
+  move = (socket) => (direction) => {
+    const player = this.players[socket.id]
 
-    console.log('movement player', player);
+    const speed = 10;
 
-    if (direction.left) player.coords.x -= 15;
-    if (direction.up) player.coords.y -= 15;
-    if (direction.right) player.coords.x += 15;
-    if (direction.down) player.coords.y += 15;
+    if (direction.left) player.coords.x -= speed;
+    if (direction.up) player.coords.y -= speed;
+    if (direction.right) player.coords.x += speed;
+    if (direction.down) player.coords.y += speed;
 
-    socket.emit('update-player', {
-      socketId: socket.id,
-      player,
-    });
+    socket.broadcast.emit('update-player', { socketId: socket.id, player });
+    socket.emit('update-player', { socketId: socket.id, player });
   };
 
   disconnect = (socket) => () => {
-    console.log('disconnect');
     delete this.players[socket.id];
     socket.emit('delete-player', socket.id);
   };
 
   connection = (io) => (socket) => {
     socket.on('new-player', this.newPlayer(socket, io));
-    socket.on('movement', this.movement(socket, io));
+    socket.on('move', this.move(socket, io));
     socket.on('disconnect', this.disconnect(socket, io));
   };
 

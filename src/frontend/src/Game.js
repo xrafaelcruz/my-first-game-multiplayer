@@ -1,35 +1,43 @@
-export default class Game {
-  players = {};
+import Player from './Player.js';
 
-  constructor(socket) {
-    this.socket = socket;
+class Canvas {
+  constructor() {
+    this.canvas = document.getElementById('canvas');
 
+    this.width = 200;
+    this.height = 200;
+
+    this.updateCanvasSize()
     this.addListeners();
-    this.setupCanvas();
-    this.start();
   }
 
   updateCanvasSize = () => {
-    const canvas = document.getElementById('canvas');
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+  }
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    return canvas;
-  };
-
-  setupCanvas = () => {
-    const canvas = this.updateCanvasSize();
-
-    this.context = canvas.getContext('2d');
-  };
+  getContext = () => {
+    return this.canvas.getContext('2d');
+  }
 
   addListeners = () => {
     window.addEventListener('resize', this.updateCanvasSize);
   };
+}
+
+export default class Game {
+  players = {}
+
+  constructor(socket) {
+    this.socket = socket;
+    this.canvas = new Canvas();
+    this.context = this.canvas.getContext();
+
+    this.start();
+  }
 
   renderGame = () => {
-    this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    this.context.clearRect(0, 0, 200, 200);
 
     for (let id in this.players) {
       const player = this.players[id];
@@ -44,6 +52,13 @@ export default class Game {
   };
 
   start = () => {
+    this.player = new Player(this.socket, this.players, this.context);
+
+    this.socket.on('update-all-players', (players) => {
+      this.players = players;
+      this.player.players = players
+    })
+
     this.socket.on('update-player', (payload) => {
       this.players[payload.socketId] = payload.player;
     });

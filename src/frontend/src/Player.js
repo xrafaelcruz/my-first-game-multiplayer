@@ -1,5 +1,6 @@
 export default class Player {
-  constructor(socket) {
+  constructor(socket, players) {
+    this.players = players
     this.socket = socket;
     this.directions = { up: false, down: false, left: false, right: false };
 
@@ -25,7 +26,7 @@ export default class Player {
           break;
       }
 
-      this.socket.emit('movement', this.directions);
+      this.socket.emit('move', this.directions);
     });
 
     document.addEventListener('keyup', (event) => {
@@ -44,7 +45,7 @@ export default class Player {
           break;
       }
 
-      this.socket.emit('movement', this.directions);
+      this.socket.emit('move', this.directions);
     });
   };
 }
